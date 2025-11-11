@@ -6,9 +6,7 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
-    "build:web": "expo export --platform web",
-    "deploy:github": "npm run build:web && npx gh-pages -d dist"
+    "web": "expo start --web"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -39,8 +37,5 @@
     "react-native-worklets": "0.5.1",
     "react-native-worklets-core": "^1.6.2"
   },
-  "private": true,
-  "devDependencies": {
-    "gh-pages": "^6.3.0"
-  }
+  "private": true
 }

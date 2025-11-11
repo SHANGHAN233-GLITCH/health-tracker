@@ -23,11 +23,7 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+      "favicon": "./assets/favicon.png"
+    }
   }
 }

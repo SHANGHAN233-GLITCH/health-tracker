@@ -47,10 +47,18 @@ try {
     content = content.replace(/href="\//g, 'href="./');
     content = content.replace(/src="\//g, 'src="./');
     
-    // 确保@expo/vector-icons字体文件路径正确
-    content = content.replace(/url\('\/assets\//g, 'url(\'./assets/');
+    // 修复favicon引用，确保使用正确的图标文件
+    // 检查是否有favicon.ico引用，如果没有则添加
+    if (!content.includes('<link rel="icon"')) {
+      const faviconLink = '<link rel="icon" href="./favicon.ico" type="image/x-icon" />';
+      content = content.replace('</head>', `${faviconLink}\n  </head>`);
+    } else {
+      // 确保引用正确的favicon文件
+      content = content.replace(/<link rel="icon"[^>]*>/, '<link rel="icon" href="./favicon.ico" type="image/x-icon" />');
+    }
     
     fs.writeFileSync(indexPath, content, 'utf8');
+    console.log('Favicon reference fixed in index.html');
     console.log('Path issues in index.html fixed successfully!');
     
     // 验证修改

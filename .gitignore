@@ -5,7 +5,7 @@ node_modules/
 
 # Expo
 .expo/
-# dist/ - 不移除，因为gh-pages会自动处理
+dist/
 web-build/
 expo-env.d.ts
 
