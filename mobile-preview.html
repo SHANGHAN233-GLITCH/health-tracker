@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Tracker Mobile Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .mobile-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .mobile-frame {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #333;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            /* 响应式缩放 */
+            max-width: 95%;
+            max-height: 85vh;
+        }
+        
+        .mobile-frame::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background-color: #333;
+            border-radius: 0 0 15px 15px;
+            z-index: 1;
+        }
+        
+        .mobile-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        select {
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .mobile-frame {
+                border-width: 8px;
+                border-radius: 25px;
+            }
+            
+            .mobile-frame::before {
+                width: 100px;
+                height: 20px;
+            }
+            
+            .controls-row {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            select, button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        /* 确保在小屏幕上也能完整显示 */
+        @media (max-height: 700px) {
+            .controls {
+                margin-top: 10px;
+            }
+            
+            button, select {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mobile-preview">
+            <div class="mobile-frame" id="mobileFrame">
+                <iframe src="http://localhost:8082" id="appFrame"></iframe>
+            </div>
+            <div class="controls">
+                <div class="controls-row">
+                    <select id="deviceSelect">
+                        <option value="375,812">iPhone X/XS/11 Pro</option>
+                        <option value="414,896">iPhone 11 Pro Max</option>
+                        <option value="360,740">Samsung Galaxy S8</option>
+                        <option value="412,823">Samsung Galaxy S9+</option>
+                        <option value="390,844">iPhone 12</option>
+                    </select>
+                    <button onclick="refreshFrame()">刷新应用</button>
+                </div>
+                <div class="controls-row">
+                    <button onclick="toggleFullScreen()">切换全屏</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const frame = document.getElementById('appFrame');
+        const deviceSelect = document.getElementById('deviceSelect');
+        const mobileFrame = document.getElementById('mobileFrame');
+        const container = document.querySelector('.container');
+        let isFullScreen = false;
+
+        // 切换不同设备尺寸
+        deviceSelect.addEventListener('change', function() {
+            const dimensions = this.value.split(',');
+            const width = dimensions[0];
+            const height = dimensions[1];
+            
+            mobileFrame.style.width = `${width}px`;
+            mobileFrame.style.height = `${height}px`;
+            
+            // 调整手机尺寸后也保持在屏幕内
+            adjustMobileFrameSize();
+        });
+
+        // 刷新应用
+        function refreshFrame() {
+            frame.src = frame.src;
+        }
+        
+        // 切换全屏模式
+        function toggleFullScreen() {
+            if (!isFullScreen) {
+                // 进入全屏模式
+                isFullScreen = true;
+                document.querySelector('.controls').style.display = 'none';
+                mobileFrame.style.maxWidth = '100%';
+                mobileFrame.style.maxHeight = '100vh';
+                container.style.padding = '0';
+                
+                // 根据屏幕大小调整手机尺寸
+                fitToScreen();
+            } else {
+                // 退出全屏模式
+                isFullScreen = false;
+                document.querySelector('.controls').style.display = 'flex';
+                mobileFrame.style.maxWidth = '95%';
+                mobileFrame.style.maxHeight = '85vh';
+                container.style.padding = '10px';
+                
+                // 恢复原始尺寸
+                const dimensions = deviceSelect.value.split(',');
+                mobileFrame.style.width = `${dimensions[0]}px`;
+                mobileFrame.style.height = `${dimensions[1]}px`;
+                adjustMobileFrameSize();
+            }
+        }
+        
+        // 根据可用空间调整手机框架大小
+        function adjustMobileFrameSize() {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            const controlsHeight = document.querySelector('.controls').offsetHeight;
+            
+            // 计算可用高度（减去控制器高度和一些边距）
+            const availableHeight = containerHeight - controlsHeight - 30;
+            
+            // 获取当前手机尺寸
+            const currentWidth = parseFloat(mobileFrame.style.width);
+            const currentHeight = parseFloat(mobileFrame.style.height);
+            
+            // 计算缩放比例
+            let scale = 1;
+            if (currentWidth > containerWidth * 0.95) {
+                scale = Math.min(scale, containerWidth * 0.95 / currentWidth);
+            }
+            if (currentHeight > availableHeight) {
+                scale = Math.min(scale, availableHeight / currentHeight);
+            }
+            
+            // 应用缩放（如果需要）
+            if (scale < 1) {
+                const newWidth = currentWidth * scale;
+                const newHeight = currentHeight * scale;
+                mobileFrame.style.width = `${newWidth}px`;
+                mobileFrame.style.height = `${newHeight}px`;
+            }
+        }
+        
+        // 全屏适配
+        function fitToScreen() {
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+            
+            // 获取当前手机尺寸比例
+            const dimensions = deviceSelect.value.split(',');
+            const originalWidth = parseInt(dimensions[0]);
+            const originalHeight = parseInt(dimensions[1]);
+            const aspectRatio = originalWidth / originalHeight;
+            
+            // 计算最大适配尺寸
+            let newWidth, newHeight;
+            if (containerWidth / aspectRatio <= containerHeight) {
+                newWidth = containerWidth;
+                newHeight = containerWidth / aspectRatio;
+            } else {
+                newHeight = containerHeight;
+                newWidth = containerHeight * aspectRatio;
+            }
+            
+            // 应用适配后的尺寸
+            mobileFrame.style.width = `${newWidth}px`;
+            mobileFrame.style.height = `${newHeight}px`;
+        }
+        
+        // 窗口大小改变时自动调整
+        window.addEventListener('resize', function() {
+            if (isFullScreen) {
+                fitToScreen();
+            } else {
+                adjustMobileFrameSize();
+            }
+        });
+        
+        // 初始调整
+        window.addEventListener('load', adjustMobileFrameSize);
+    </script>
+</body>
+</html>
