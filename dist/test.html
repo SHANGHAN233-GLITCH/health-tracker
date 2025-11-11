@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Health Tracker Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+      }
+      .success {
+        color: green;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <h1 class="success">Health Tracker Deployment Test</h1>
+    <p>If you can see this page, GitHub Pages is working correctly.</p>
+    <p>Current timestamp: <span id="timestamp"></span></p>
+    
+    <script>
+      // Add current timestamp to ensure we're not seeing a cached version
+      document.getElementById('timestamp').textContent = new Date().toISOString();
+      
+      // Try to load the actual app JavaScript if available
+      function tryLoadApp() {
+        console.log('Attempting to verify app JavaScript presence...');
+        const script = document.createElement('script');
+        script.src = '/health-tracker/_expo/static/js/web/index-dc76e1f571c8b571576df588a44fccb4.js';
+        script.onload = () => console.log('Successfully loaded app JavaScript!');
+        script.onerror = (e) => console.error('Failed to load app JavaScript:', e);
+        // Don't append to body to avoid execution, just test loading
+        // document.body.appendChild(script);
+      }
+      
+      // Check if the _expo directory exists
+      fetch('/health-tracker/_expo/')
+        .then(() => console.log('_expo directory is accessible'))
+        .catch(() => console.error('_expo directory is not accessible'));
+    </script>
+  </body>
+</html>
