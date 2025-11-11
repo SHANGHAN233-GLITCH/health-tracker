@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "buildCommand": "node build-web.js",
-  "outputDirectory": "dist",
   "builds": [
     {
-      "src": "dist/**",
-      "use": "@vercel/static"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist",
+        "buildCommand": "node build-web.js"
+      }
     }
   ],
   "routes": [
@@ -13,8 +15,9 @@
       "handle": "filesystem"
     },
     {
-      "src": "/.*",
+      "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "outputDirectory": "dist"
 }
