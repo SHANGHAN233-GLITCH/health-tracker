@@ -1,23 +1,20 @@
 {
   "version": 2,
+  "buildCommand": "node build-web.js",
+  "outputDirectory": "dist",
   "builds": [
     {
-      "src": "build-web.js",
-      "use": "@vercel/node",
-      "config": {
-        "distDir": "dist"
-      }
+      "src": "dist/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/dist/$1"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
     }
-  ],
-  "functions": {
-    "build-web.js": {
-      "memory": 1024
-    }
-  }
+  ]
 }
